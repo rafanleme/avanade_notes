@@ -1,3 +1,9 @@
+/**
+ * Vamos estrututar as nossas notas
+ * Daqui pra frente elas terão id e a data de inclusão
+ */
+
+
 const form = document.querySelector("#form-notes");
 const inputCpf = document.querySelector("#input-cpf");
 const sectionListNotes = document.querySelector("#list-notes");
@@ -19,19 +25,13 @@ const loadNotesFromStorage = () => {
 
 window.addEventListener("unload", saveNotesToStorage);
 
-/**
- * Realize o carregamento da lista do localStorage
- * Para tal, percorra a lista recuperada e utiliza a função já criada 
- * para criar os elementos das notas
- */
 window.addEventListener("load", loadNotesFromStorage);
 
-const removeNote = (event) => {
+const removeNote = (event, texdNoteToRemove) => {
   const noteToRemove = event.target.parentNode;
   sectionListNotes.removeChild(noteToRemove);
 
-  // listNotes = listNotes.filter(note => )
-
+  listNotes = listNotes.filter(note => note !== texdNoteToRemove); //[nota1, nota2, nota3] = [nota1, nota3]
 }
 
 const createNewNoteElement = (newNote) => {
@@ -44,7 +44,7 @@ const createNewNoteElement = (newNote) => {
   trashElement.className = "material-icons";
   trashElement.textContent = "delete_forever";
 
-  trashElement.addEventListener("click", removeNote);
+  trashElement.addEventListener("click", (event) => removeNote(event, newNote));
 
   newNoteElement.appendChild(trashElement);
 
