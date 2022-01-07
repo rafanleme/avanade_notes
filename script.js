@@ -3,7 +3,6 @@
  * Daqui pra frente elas terão id e a data de inclusão
  */
 
-
 const form = document.querySelector("#form-notes");
 const inputCpf = document.querySelector("#input-cpf");
 const sectionListNotes = document.querySelector("#list-notes");
@@ -18,33 +17,43 @@ const saveNotesToStorage = () =>
 const loadNotesFromStorage = () => {
   const listStorage = JSON.parse(localStorage.getItem(KEY_STORAGE));
 
-  listNotes = listStorage;
+  listNotes = listStorage || [];
 
-  listNotes.forEach(note => addNoteToList(note));
+  listNotes.forEach(note => {
+    note.date = new Date(note.date); //convertendo a data string para Date()
+    addNoteToList(note);
+  });
 }
 
 window.addEventListener("unload", saveNotesToStorage);
 
 window.addEventListener("load", loadNotesFromStorage);
 
-const removeNote = (event, texdNoteToRemove) => {
+const removeNote = (event, idNoteToRemove) => {
   const noteToRemove = event.target.parentNode;
   sectionListNotes.removeChild(noteToRemove);
 
-  listNotes = listNotes.filter(note => note !== texdNoteToRemove); //[nota1, nota2, nota3] = [nota1, nota3]
+  listNotes = listNotes.filter(note => note.id !== idNoteToRemove);
 }
+
+const formatDate = (date) => Intl.DateTimeFormat(navigator.language, { dateStyle: "short", timeStyle: "short" }).format(date);
 
 const createNewNoteElement = (newNote) => {
   const newNoteElement = document.createElement("article");
+
+  const pDateElement = document.createElement("p");
+  pDateElement.textContent = formatDate(newNote.date);
+  newNoteElement.appendChild(pDateElement);
+
   const pElement = document.createElement("p");
-  pElement.textContent = newNote;
+  pElement.textContent = newNote.text;
   newNoteElement.appendChild(pElement);
 
   const trashElement = document.createElement("span");
   trashElement.className = "material-icons";
   trashElement.textContent = "delete_forever";
 
-  trashElement.addEventListener("click", (event) => removeNote(event, newNote));
+  trashElement.addEventListener("click", (event) => removeNote(event, newNote.id));
 
   newNoteElement.appendChild(trashElement);
 
@@ -62,16 +71,19 @@ const cleanForm = () => form.reset();
 const handleSubmit = (event) => {
   event.preventDefault();
 
-  //recuperar a nota digitada pelo usuário
-  const textNewNote = inputCpf.value;
+  const dateNow = new Date();
 
-  addNoteToList(textNewNote);
+  const newNote = {
+    id: dateNow.getTime(),
+    date: dateNow,
+    text: inputCpf.value
+  }
 
-  listNotes.push(textNewNote);
+  addNoteToList(newNote);
+
+  listNotes.push(newNote);
 
   cleanForm();
-
-  //atualizar o localStorage
 }
 
 form.addEventListener("submit", handleSubmit);

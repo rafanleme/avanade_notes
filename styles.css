@@ -84,6 +84,11 @@ article{
   box-shadow: 2px 2px 10px #00000099;
 }
 
+article p:first-child {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
 article .material-icons{
   position: absolute;
   bottom: 5px;
